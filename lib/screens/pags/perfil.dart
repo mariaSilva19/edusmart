@@ -1,8 +1,14 @@
+import 'package:edusmart/controllers/authProvider.dart';
 import 'package:edusmart/screens/cadastro.dart';
 import 'package:edusmart/screens/home.dart';
+import 'package:edusmart/screens/pags/config.dart';
+import 'package:edusmart/services/auth_service.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ProfilePage extends StatelessWidget {
+  const ProfilePage({super.key});
+
   void changePage(BuildContext context, int index) {
     switch (index) {
       case 0:
@@ -32,7 +38,8 @@ class ProfilePage extends StatelessWidget {
             TextButton(
               child: Text('Cancelar'),
               style: TextButton.styleFrom(
-                foregroundColor: Colors.white, backgroundColor: Colors.grey, // Cor do texto
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.grey, // Cor do texto
               ),
               onPressed: () {
                 Navigator.of(context).pop(); // Fecha o diálogo
@@ -41,7 +48,8 @@ class ProfilePage extends StatelessWidget {
             TextButton(
               child: Text('Excluir'),
               style: TextButton.styleFrom(
-                foregroundColor: Colors.white, backgroundColor: Color(0xFF0F4C7E), // Cor do texto
+                foregroundColor: Colors.white,
+                backgroundColor: Color(0xFF0F4C7E), // Cor do texto
               ),
               onPressed: () {
                 // Lógica para excluir a conta pode ser colocada aqui
@@ -70,7 +78,8 @@ class ProfilePage extends StatelessWidget {
             TextButton(
               child: Text('Cancelar'),
               style: TextButton.styleFrom(
-                foregroundColor: Colors.white, backgroundColor: Colors.grey, // Cor do texto
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.grey, // Cor do texto
               ),
               onPressed: () {
                 Navigator.of(context).pop(); // Fecha o diálogo
@@ -79,7 +88,8 @@ class ProfilePage extends StatelessWidget {
             TextButton(
               child: Text('Sair'),
               style: TextButton.styleFrom(
-                foregroundColor: Colors.white, backgroundColor: Color(0xFF0F4C7E), // Cor do texto
+                foregroundColor: Colors.white,
+                backgroundColor: Color(0xFF0F4C7E), // Cor do texto
               ),
               onPressed: () {
                 Navigator.of(context).pop(); // Fecha o diálogo
@@ -97,6 +107,12 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+
+    final nomeUsuario = authProvider.nome;
+    final emailUsuario = authProvider.email;
+    final avatarIcon = authProvider.avatar;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xFF0F4C7E),
@@ -131,7 +147,7 @@ class ProfilePage extends StatelessWidget {
                   ),
                   SizedBox(height: 8),
                   Text(
-                    'Ester Ramalho',
+                    nomeUsuario!,
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 20,
@@ -144,34 +160,28 @@ class ProfilePage extends StatelessWidget {
             ),
           ),
 
-          // Info Section
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16.0),
+          // Info Section - Without border
+          Expanded(
             child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.2),
-                    spreadRadius: 5,
-                    blurRadius: 7,
-                    offset: Offset(0, 3),
-                  ),
-                ],
-              ),
+              color: Colors.white, // Just a background color, no border
               padding: EdgeInsets.all(16.0),
               child: Column(
                 children: [
                   ListTile(
                     leading: Icon(Icons.email, color: Color(0xFF0F4C7E)),
-                    title: Text('esterramalho@gmail.com'),
+                    title: Text(emailUsuario!),
                   ),
                   Divider(),
                   ListTile(
                     leading: Icon(Icons.settings, color: Color(0xFF0F4C7E)),
                     title: Text('Configurações'),
-                    onTap: () {},
+                    onTap: () {
+                      // Navega para a tela de configurações
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => SettingsPage()),
+                      );
+                    },
                   ),
                   Divider(),
                   ListTile(

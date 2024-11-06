@@ -152,34 +152,34 @@ class _HomeScreenState extends State<HomeScreen> {
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: [
-                      _buildCategoryButton('Mat', 1, Icons.calculate,
+                      _buildCategoryButton('mat', 1, Icons.calculate,
                           const MatPage()), // Página de Matemática
                       const SizedBox(width: 10),
-                      _buildCategoryButton('Geo', 2, Icons.public,
+                      _buildCategoryButton('geo', 2, Icons.public,
                           GeoPage()), // Página de Geografia
                       const SizedBox(width: 10),
-                      _buildCategoryButton('Quim', 3, Icons.science,
+                      _buildCategoryButton('quim', 3, Icons.science,
                           QuiPage()), // Página de Química
                       const SizedBox(width: 10),
-                      _buildCategoryButton('Fis', 4, Icons.flash_on,
+                      _buildCategoryButton('fis', 4, Icons.flash_on,
                           FisPage()), // Página de Física
                       const SizedBox(width: 10),
                       _buildCategoryButton(
                           'Bio', 5, Icons.eco, BioPage()), // Página de Biologia
                       const SizedBox(width: 10),
-                      _buildCategoryButton('Soc', 6, Icons.groups,
+                      _buildCategoryButton('soc', 6, Icons.groups,
                           SocPage()), // Página de Sociologia
                       const SizedBox(width: 10),
-                      _buildCategoryButton('His', 7, Icons.account_balance,
+                      _buildCategoryButton('his', 7, Icons.account_balance,
                           HisPage()), // Página de História
                       const SizedBox(width: 10),
-                      _buildCategoryButton('Filo', 8, Icons.psychology,
+                      _buildCategoryButton('filo', 8, Icons.psychology,
                           FiloPage()), // Página de Filosofia
                       const SizedBox(width: 10),
-                      _buildCategoryButton('Port', 9, Icons.library_books,
+                      _buildCategoryButton('port', 9, Icons.library_books,
                           PortPage()), // Página de Português
                       const SizedBox(width: 10),
-                      _buildCategoryButton('Ing', 10, Icons.spellcheck_outlined,
+                      _buildCategoryButton('ing', 10, Icons.spellcheck_outlined,
                           IngPage()), // Página de Inglês
                     ],
                   )),

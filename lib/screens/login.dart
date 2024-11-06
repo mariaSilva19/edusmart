@@ -42,6 +42,8 @@ class LoginScreen extends StatelessWidget{
                   controller: _emailController,
                   decoration: const InputDecoration(
                     labelText: 'Email',
+                    suffixText: 'Coloque seu email',
+                        suffixStyle: TextStyle(color: Colors.green),
                     contentPadding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0), // Aumenta o padding interno
                   ),
                 ),
@@ -50,6 +52,8 @@ class LoginScreen extends StatelessWidget{
                   controller: _passwordController,
                   decoration: const InputDecoration(
                     labelText: 'Password',
+                    suffixText: 'coloque sua senha',
+                        suffixStyle: TextStyle(color: Colors.green),
                     contentPadding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0), // Aumenta o padding interno
                    
                   ),

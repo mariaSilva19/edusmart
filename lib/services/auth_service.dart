@@ -1,9 +1,13 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
-  final String baseUrl = 'https://b19c12c9-4a42-48c0-9e18-45cccae95eb0-00-1sgyzy7k6iy73.janeway.replit.dev/api';
+  final String baseUrl = 'https://b7089caa-e476-42ba-82fb-5e43b96e9b62-00-1jkv1557vl3bj.worf.replit.dev/api';
+
+  static String emailLogado = '';
+  static String usuarioLogado = '';
 
   Future<void> register(String nome, String email, String password) async {
     final url = Uri.parse('$baseUrl/users/register');
@@ -30,9 +34,21 @@ class AuthService {
     print(response.body);
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
+      final prefs = await SharedPreferences.getInstance();
+      prefs.setString('nome', responseData['usuario'].toString());
+      prefs.setString('email', email);
+      prefs.setString('avatar', responseData['avatar']?.toString() ?? '');
+      usuarioLogado = responseData['usuario'];
       return responseData['token'];
     } else {
       throw Exception('Failed to login: ${response.body}');
     }
+  }
+
+  static String getEmailLogado() {
+    return emailLogado;
+  }
+  static String getNomeLogado() {
+    return usuarioLogado;
   }
 }

@@ -1,4 +1,7 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
 
 class MatPage extends StatefulWidget {
   const MatPage({super.key});
@@ -8,34 +11,27 @@ class MatPage extends StatefulWidget {
 }
 
 class _MatPageState extends State<MatPage> {
-  // Lista de imagens para os cards (pode ser repetida para cada categoria)
-  final List<List<String>> videoImages = [
-    ['assets/mat.png', 'assets/mat.png', 'assets/mat.png', 'assets/mat.png'],
-    ['assets/mat.png', 'assets/mat.png', 'assets/mat.png', 'assets/mat.png'],
-    ['assets/mat.png', 'assets/mat.png', 'assets/mat.png', 'assets/mat.png'],
-  ];
+  List<dynamic> videoData = [];
 
-  // Lista de ratings para cada imagem por categoria
-  final List<List<int>> ratings = [
-    [0, 0, 0, 0], // Ratings para a primeira categoria
-    [0, 0, 0, 0], // Ratings para a segunda categoria
-    [0, 0, 0, 0], // Ratings para a terceira categoria
-  ];
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+  }
 
-  void changePage(BuildContext context, int index) {
-    switch (index) {
-      case 0:
-        Navigator.popAndPushNamed(context, '/home');
-        break;
-      case 1:
-        Navigator.popAndPushNamed(context, '/cronograma');
-        break;
-      case 2:
-        Navigator.popAndPushNamed(context, '/chat');
-        break;
-      case 3:
-        Navigator.popAndPushNamed(context, '/perfil');
-        break;
+  Future<void> fetchData() async {
+    final response = await http.get(
+      Uri.parse('https://b7089caa-e476-42ba-82fb-5e43b96e9b62-00-1jkv1557vl3bj.worf.replit.dev/api/products/find'),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body)["produtos"];
+      setState(() {
+        // Filtra apenas os vídeos com a categoria "Matemática"
+        videoData = data.where((produto) => produto["categoria"] == "Matemática").toList();
+      });
+    } else {
+      throw Exception('Erro ao carregar dados da API');
     }
   }
 
@@ -52,67 +48,7 @@ class _MatPageState extends State<MatPage> {
           color: Colors.white,
         ),
       ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            const DrawerHeader(
-              decoration: BoxDecoration(
-                color: Color.fromARGB(255, 15, 76, 126),
-              ),
-              child: Text(
-                'Menu',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                ),
-              ),
-            ),
-            ListTile(
-              leading: const Icon(Icons.home),
-              title: const Text('Início'),
-              onTap: () {
-                Navigator.popAndPushNamed(context, '/home');
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.book_online),
-              title: const Text('Planos de Estudos'),
-              onTap: () {
-                Navigator.popAndPushNamed(context, '/cronograma');
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.assignment_turned_in),
-              title: const Text('Gabaritos'),
-              onTap: () {
-                Navigator.popAndPushNamed(context, '/exercicios');
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.video_library),
-              title: const Text('Aulas'),
-              onTap: () {
-                Navigator.popAndPushNamed(context, '/materias');
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.account_circle),
-              title: const Text('Área do Aluno'),
-              onTap: () {
-                // Ação ao clicar em Área do Aluno
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.edit),
-              title: const Text('Redação'),
-              onTap: () {
-                // Ação ao clicar em Redação
-              },
-            ),
-          ],
-        ),
-      ),
+      drawer: _buildDrawer(),
       body: SingleChildScrollView(
         child: Stack(
           children: [
@@ -131,11 +67,10 @@ class _MatPageState extends State<MatPage> {
                     ),
                   ),
                 ),
-                // Container branco sobre o conteúdo azul
                 Container(
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color: Colors.white, // Cor do container branco
+                    color: Colors.white,
                   ),
                   margin: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Column(
@@ -164,31 +99,13 @@ class _MatPageState extends State<MatPage> {
                       ),
                       const SizedBox(height: 16),
                       const Text(
-                        'Matriz',
+                        'Vídeos',
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      _buildIndividualVideoList(0), // Primeira lista de vídeos
-                      const SizedBox(height: 16),
-                      const Text(
-                        'Função',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      _buildIndividualVideoList(1), // Segunda lista de vídeos
-                      const SizedBox(height: 16),
-                      const Text(
-                        'Geometria',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      _buildIndividualVideoList(2), // Terceira lista de vídeos
+                      _buildVideoList(),
                     ],
                   ),
                 ),
@@ -206,86 +123,153 @@ class _MatPageState extends State<MatPage> {
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        onTap: (index) {
-          changePage(context, index);
-        },
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: '',
+      bottomNavigationBar: _buildBottomNavigationBar(),
+    );
+  }
+
+  Widget _buildDrawer() {
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: <Widget>[
+          const DrawerHeader(
+            decoration: BoxDecoration(
+              color: Color.fromARGB(255, 15, 76, 126),
+            ),
+            child: Text(
+              'Menu',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 24,
+              ),
+            ),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_today),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.chat),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: '',
-          ),
+          _buildDrawerItem(Icons.home, 'Início', '/home'),
+          _buildDrawerItem(Icons.book_online, 'Planos de Estudos', '/cronograma'),
+          _buildDrawerItem(Icons.assignment_turned_in, 'Gabaritos', '/exercicios'),
+          _buildDrawerItem(Icons.video_library, 'Aulas', '/materias'),
+          _buildDrawerItem(Icons.account_circle, 'Área do Aluno', '/perfil'),
         ],
-        selectedItemColor: Colors.grey,
-        unselectedItemColor: const Color.fromARGB(255, 174, 161, 161),
       ),
     );
   }
 
-  // Método para criar uma lista individual de vídeos por categoria
-  Widget _buildIndividualVideoList(int categoryIndex) {
-    return SizedBox(
-      height: 190,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: videoImages[categoryIndex].length,
-        itemBuilder: (context, index) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(15),
-                    child: Image.asset(
-                      videoImages[categoryIndex][index],
-                      fit: BoxFit.cover,
-                      width: 200,
-                    ),
+  ListTile _buildDrawerItem(IconData icon, String text, String? route) {
+    return ListTile(
+      leading: Icon(icon),
+      title: Text(text),
+      onTap: route != null
+          ? () {
+              Navigator.popAndPushNamed(context, route);
+            }
+          : null,
+    );
+  }
+
+  Widget _buildVideoList() {
+    List<List<dynamic>> videoChunks = _chunkVideos(videoData, 5);
+    
+    return Column(
+      children: videoChunks.map((chunk) {
+        return SizedBox(
+          height: 190,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: chunk.length,
+            itemBuilder: (context, index) {
+              final video = chunk[index];
+              final videoUrl = video["videoUrl"];
+
+              return GestureDetector(
+                onTap: () => _launchURL(videoUrl),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(15),
+                          child: Image.network(video["imagem"]),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4.0),
+                        child: Text(
+                          video["nome"],
+                          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4.0),
-                  child: _buildStarRating(categoryIndex, index),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
+              );
+            },
+          ),
+        );
+      }).toList(),
     );
   }
 
-  Widget _buildStarRating(int categoryIndex, int videoIndex) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(5, (index) {
-        return IconButton(
-          iconSize: 18.0,
-          icon: Icon(
-            index < ratings[categoryIndex][videoIndex] ? Icons.star : Icons.star_border,
-            color: Colors.yellow,
-          ),
-          onPressed: () {
-            setState(() {
-              ratings[categoryIndex][videoIndex] = index + 1;
-            });
-          },
-        );
-      }),
+  // Função para dividir os vídeos em blocos de 5
+  List<List<dynamic>> _chunkVideos(List<dynamic> list, int chunkSize) {
+    List<List<dynamic>> chunks = [];
+    for (int i = 0; i < list.length; i += chunkSize) {
+      chunks.add(list.sublist(i, i + chunkSize > list.length ? list.length : i + chunkSize));
+    }
+    return chunks;
+  }
+
+  void _launchURL(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Não foi possível abrir o link $url';
+    }
+  }
+
+  Widget _buildBottomNavigationBar() {
+    return BottomNavigationBar(
+      onTap: (index) {
+        changePage(context, index);
+      },
+      items: const <BottomNavigationBarItem>[
+        BottomNavigationBarItem(
+          icon: Icon(Icons.home),
+          label: '',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.calendar_today),
+          label: '',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.chat),
+          label: '',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.person),
+          label: '',
+        ),
+      ],
+      selectedItemColor: Colors.grey,
+      unselectedItemColor: Color.fromARGB(255, 174, 161, 161),
     );
+  }
+
+  void changePage(BuildContext context, int index) {
+    switch (index) {
+      case 0:
+        Navigator.popAndPushNamed(context, '/home');
+        break;
+      case 1:
+        Navigator.popAndPushNamed(context, '/cronograma');
+        break;
+      case 2:
+        Navigator.popAndPushNamed(context, '/chat');
+        break;
+      case 3:
+        Navigator.popAndPushNamed(context, '/perfil');
+        break;
+    }
   }
 }
