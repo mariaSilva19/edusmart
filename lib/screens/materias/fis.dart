@@ -1,16 +1,39 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
-
-
+import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
 
 class FisPage extends StatefulWidget {
   const FisPage({super.key});
 
   @override
   _FisPageState createState() => _FisPageState();
-
 }
+
 class _FisPageState extends State<FisPage> {
   int _currentRating = 0;
+  List<dynamic> videoData = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+  }
+
+  Future<void> fetchData() async {
+    final response = await http.get(
+      Uri.parse('https://b7089caa-e476-42ba-82fb-5e43b96e9b62-00-1jkv1557vl3bj.worf.replit.dev/api/products/find'),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body)["produtos"];
+      setState(() {
+        videoData = data.where((produto) => produto["categoria"] == "Física").toList();
+      });
+    } else {
+      throw Exception('Erro ao carregar dados da API');
+    }
+  }
 
   void changePage(BuildContext context, int index) {
     switch (index) {
@@ -31,121 +54,51 @@ class _FisPageState extends State<FisPage> {
 
   @override
   Widget build(BuildContext context) {
+    List<List<dynamic>> videoChunks = _chunkVideos(videoData, 5);
+
     return Scaffold(
-       appBar: AppBar(
-         title: const Text(
+      appBar: AppBar(
+        title: const Text(
           'Física',
-           style: TextStyle(color: Colors.white),),
+          style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: const Color.fromARGB(255, 15, 76, 126),
         iconTheme: const IconThemeData(
-          color: Colors.white, // Define a cor do ícone do Drawer como branco
+          color: Colors.white, 
         ),
       ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            const DrawerHeader(
-              decoration: BoxDecoration(
-                color: Color.fromARGB(255, 15, 76, 126),
-              ),
-              child: Text(
-                'Menu',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                ),
-              ),
-            ),
-            ListTile(
-              leading: const Icon(Icons.home),
-              title: const Text('Início'),
-              onTap: () {
-                Navigator.popAndPushNamed(context, '/home');
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.book_online),
-              title: const Text('Planos de Estudos'),
-              onTap: () {
-                Navigator.popAndPushNamed(context, '/cronograma');
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.assignment_turned_in),
-              title: const Text('Gabaritos'),
-              onTap: () {
-                Navigator.popAndPushNamed(context, '/exercicios');
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.video_library),
-              title: const Text('Aulas'),
-              onTap: () {
-                Navigator.popAndPushNamed(context, '/materias');
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.account_circle),
-              title: const Text('Área do Aluno'),
-              onTap: () {
-                // Ação ao clicar em Área do Aluno
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.edit),
-              title: const Text('Redação'),
-              onTap: () {
-                // Ação ao clicar em Redação
-              },
-            ),
-          ],
-        ),
-      ),
+      drawer: _buildDrawer(),
       body: SingleChildScrollView(
         child: Stack(
           children: [
             Column(
               children: [
-                Stack(
-                  children: [
-                    Container(
-                      color: const Color.fromARGB(255, 15, 76, 126),
-                      width: double.infinity,
-                      height: 200,
-                    ),
-                  ],
+                Container(
+                  color: const Color.fromARGB(255, 15, 76, 126),
+                  width: double.infinity,
+                  height: 200,
                 ),
                 Center(
                   child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 8.0,
-                      horizontal: 16.0,
-                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                   ),
                 ),
-                // Container branco sobre o conteúdo azul
                 Container(
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color: Colors.white, // Cor do container branco
+                    color: Colors.white,
                   ),
-                  margin: const EdgeInsets.symmetric(horizontal: 16.0), // Adiciona uma margem horizontal
+                  margin: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(height: 16), // Espaçamento entre o retângulo e o próximo item
-
-                      // Container laranja centralizado dentro do container branco
+                      const SizedBox(height: 16),
                       Center(
                         child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 8.0,
-                            horizontal: 16.0,
-                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                           decoration: BoxDecoration(
-                            color: Colors.pink, // Retângulo laranja
-                            borderRadius: BorderRadius.circular(12), // Arredondamento do retângulo laranja
+                            color: Colors.pink,
+                            borderRadius: BorderRadius.circular(12),
                           ),
                           child: const Text(
                             'Física',
@@ -157,34 +110,12 @@ class _FisPageState extends State<FisPage> {
                           ),
                         ),
                       ),
-
-                      const SizedBox(height: 16), // Espaçamento após o título
+                      const SizedBox(height: 16),
                       const Text(
-                        'Cinemática ',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        'Vídeos',
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                       ),
-                      _buildVideoList(), // Primeira lista de vídeos
-                      const SizedBox(height: 16), // Espaçamento entre as seções
-                      const Text(
-                        'Eletrodinâmica',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      _buildVideoList(), // Segunda lista de vídeos
-                      const SizedBox(height: 16), // Espaçamento entre as seções
-                      const Text(
-                        'Gravidade',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      _buildVideoList(), // Terceira lista de vídeos
+                      _buildVideoList(videoChunks),
                     ],
                   ),
                 ),
@@ -192,96 +123,143 @@ class _FisPageState extends State<FisPage> {
             ),
             Positioned(
               top: -20,
-              right: -50, // Ajuste para mover a imagem mais para a esquerda
+              right: -50,
               child: Image.asset(
                 'assets/foton2.png',
-                width: 350, // Largura da imagem
-                height: 350, // Altura da imagem
+                width: 350,
+                height: 350,
               ),
             ),
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        onTap: (index) {
-          changePage(context, index);
-        },
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: '',
+      bottomNavigationBar: _buildBottomNavigationBar(),
+    );
+  }
+
+  Widget _buildDrawer() {
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: <Widget>[
+          const DrawerHeader(
+            decoration: BoxDecoration(
+              color: Color.fromARGB(255, 15, 76, 126),
+            ),
+            child: Text(
+              'Menu',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 24,
+              ),
+            ),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_today),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.chat),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: '',
-          ),
+          _buildDrawerItem(Icons.home, 'Início', '/home'),
+          _buildDrawerItem(Icons.book_online, 'Planos de Estudos', '/cronograma'),
+          _buildDrawerItem(Icons.assignment_turned_in, 'Gabaritos', '/exercicios'),
+          _buildDrawerItem(Icons.video_library, 'Aulas', '/materias'),
+          _buildDrawerItem(Icons.account_circle, 'Área do Aluno', '/perfil'),
         ],
-        selectedItemColor: Colors.grey,
-        unselectedItemColor: const Color.fromARGB(255, 174, 161, 161),
       ),
     );
   }
 
-  Widget _buildVideoList() {
-    return SizedBox(
-      height: 190, // Aumentei a altura do widget para permitir imagens maiores
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: 4,
-        itemBuilder: (context, index) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: ClipRRect(
-                    borderRadius:
-                        BorderRadius.circular(15), // Arredondamento da imagem
-                    child: Image.asset(
-                      'assets/fisica.png',
-                      fit: BoxFit.cover,
-                      width: 200,
-                    ),
+  ListTile _buildDrawerItem(IconData icon, String text, String? route) {
+    return ListTile(
+      leading: Icon(icon),
+      title: Text(text),
+      onTap: route != null
+          ? () {
+              Navigator.popAndPushNamed(context, route);
+            }
+          : null,
+    );
+  }
+
+  Widget _buildVideoList(List<List<dynamic>> videoChunks) {
+    return Column(
+      children: videoChunks.map((chunk) {
+        return SizedBox(
+          height: 190,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: chunk.length,
+            itemBuilder: (context, index) {
+              final video = chunk[index];
+              final videoUrl = video["videoUrl"];
+              return GestureDetector(
+                onTap: () => _launchURL(videoUrl),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(15),
+                          child: Image.network(video["imagem"]),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4.0),
+                        child: Text(
+                          video["nome"],
+                          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4.0),
-                  child: _buildStarRating(),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
+              );
+            },
+          ),
+        );
+      }).toList(),
     );
   }
 
-  Widget _buildStarRating() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(5, (index) {
-        return IconButton(
-          iconSize: 18.0,
-          icon: Icon(
-            index < _currentRating ? Icons.star : Icons.star_border,
-            color: Colors.yellow,
-          ),
-          onPressed: () {
-            setState(() {
-              _currentRating = index + 1;
-            });
-          },
-        );
-      }),
+  // Função para dividir os vídeos em blocos de 5
+  List<List<dynamic>> _chunkVideos(List<dynamic> list, int chunkSize) {
+    List<List<dynamic>> chunks = [];
+    for (int i = 0; i < list.length; i += chunkSize) {
+      chunks.add(list.sublist(i, i + chunkSize > list.length ? list.length : i + chunkSize));
+    }
+    return chunks;
+  }
+
+  Future<void> _launchURL(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
+  BottomNavigationBar _buildBottomNavigationBar() {
+    return BottomNavigationBar(
+      onTap: (index) {
+        changePage(context, index);
+      },
+      items: const <BottomNavigationBarItem>[
+        BottomNavigationBarItem(
+          icon: Icon(Icons.home),
+          label: '',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.calendar_today),
+          label: '',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.chat),
+          label: '',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.person),
+          label: '',
+        ),
+      ],
+      selectedItemColor: Colors.grey,
+      unselectedItemColor: const Color.fromARGB(255, 174, 161, 161),
     );
   }
 }

@@ -1,5 +1,3 @@
-import 'package:edusmart/screens/home.dart';
-import 'package:edusmart/screens/pags/perfil.dart';
 import 'package:flutter/material.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -26,22 +24,22 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('EduSmart'),
+        title: Text(
+          'EduSmart',
+          style: TextStyle(color: Colors.white),
+        ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => ProfilePage()),
-            );
+            Navigator.pop(context);
           },
         ),
-        backgroundColor: Colors.blue[900],
+        backgroundColor: Color.fromARGB(255, 15, 76, 126),
         actions: [
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Image.asset(
-              'assets/foton.png', // Coloque a imagem da tartaruga nos assets
+              'assets/foton.png',
               height: 30,
               width: 30,
             ),
@@ -65,6 +63,11 @@ class _SettingsPageState extends State<SettingsPage> {
                 decoration: InputDecoration(
                   labelText: 'Nome e sobrenome',
                   hintText: 'Ester Ramalho',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  filled: true,
+                  fillColor: Colors.grey[200],
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -73,12 +76,17 @@ class _SettingsPageState extends State<SettingsPage> {
                   return null;
                 },
               ),
-              SizedBox(height: 10),
+              SizedBox(height: 20),
               TextFormField(
                 controller: _emailController,
                 decoration: InputDecoration(
                   labelText: 'E-mail',
                   hintText: 'esterramalho@gmail.com',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  filled: true,
+                  fillColor: Colors.grey[200],
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -94,11 +102,16 @@ class _SettingsPageState extends State<SettingsPage> {
                 'Redefinir senha',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 10),
+              SizedBox(height: 20),
               TextFormField(
                 controller: _passwordController,
                 decoration: InputDecoration(
                   labelText: 'Nova senha',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  filled: true,
+                  fillColor: Colors.grey[200],
                 ),
                 obscureText: true,
                 validator: (value) {
@@ -110,11 +123,16 @@ class _SettingsPageState extends State<SettingsPage> {
                   return null;
                 },
               ),
-              SizedBox(height: 10),
+              SizedBox(height: 20),
               TextFormField(
                 controller: _confirmPasswordController,
                 decoration: InputDecoration(
                   labelText: 'Digite a senha novamente',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  filled: true,
+                  fillColor: Colors.grey[200],
                 ),
                 obscureText: true,
                 validator: (value) {
@@ -130,9 +148,17 @@ class _SettingsPageState extends State<SettingsPage> {
               Center(
                 child: ElevatedButton(
                   onPressed: _saveChanges,
-                  child: Text('Salvar alterações'),
+                  child: Text(
+                    'Salvar alterações',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
                   style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                    backgroundColor: Color.fromARGB(255, 15, 76, 126), // Azul
+                    textStyle: TextStyle(color: Colors.white),
+                    padding: EdgeInsets.symmetric(horizontal: 70, vertical: 20),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
                 ),
               ),

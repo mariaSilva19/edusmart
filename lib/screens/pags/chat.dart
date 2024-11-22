@@ -1,5 +1,7 @@
 import 'package:edusmart/screens/home.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class ChatItem extends StatefulWidget {
   @override
@@ -7,25 +9,61 @@ class ChatItem extends StatefulWidget {
 }
 
 class _ChatItemState extends State<ChatItem> {
-  // Controlador para o campo de texto
   final TextEditingController _messageController = TextEditingController();
-
-  // Lista de mensagens
   List<String> _messages = [];
 
-  // Função para enviar mensagem
-  void _sendMessage() {
-    // Pegamos o texto digitado
+  // Função para enviar mensagem para a API
+  Future<void> _sendMessage() async {
     String message = _messageController.text;
 
     if (message.isNotEmpty) {
-      // Adicionamos a mensagem à lista
+      // Adiciona a mensagem do usuário à lista
       setState(() {
-        _messages.add(message);
+        _messages.add('Você: $message');
       });
 
       // Limpa o campo de texto
       _messageController.clear();
+
+      try {
+        // Envia a mensagem para a API
+        var response = await http
+            .post(
+              Uri.parse('https://c55023c1-63fe-4aa0-aff2-9acc396c9f9c-00-26z23t0h0ej8o.worf.replit.dev/chat'),
+              headers: {'Content-Type': 'application/json'},
+              body: jsonEncode({'user': 'Ester', 'message': message}),
+            )
+            .timeout(const Duration(seconds: 10)); // Timeout de 10 segundos
+
+        // Exibe código de status e corpo da resposta para diagnóstico
+        print('Status Code: ${response.statusCode}');
+        print('Response Body: ${response.body}');
+
+        // Verifica a resposta da API
+        if (response.statusCode == 200) {
+          try {
+            var data = jsonDecode(response.body);
+            // Verifica se a estrutura da resposta está correta
+            String botMessage = data['botMessage']['message'] ?? 'Resposta não encontrada.';
+            setState(() {
+              _messages.add('Bot: $botMessage');
+            });
+          } catch (e) {
+            setState(() {
+              _messages.add('Bot: Erro ao processar a resposta da API.');
+            });
+          }
+        } else {
+          setState(() {
+            _messages.add('Bot: Desculpe, houve um erro ao enviar a mensagem. Código: ${response.statusCode}');
+          });
+        }
+      } catch (e) {
+        // Exibe erro de conexão
+        setState(() {
+          _messages.add('Bot: Desculpe, houve um erro na conexão: $e');
+        });
+      }
     }
   }
 
@@ -46,8 +84,7 @@ class _ChatItemState extends State<ChatItem> {
         title: const Row(
           children: [
             CircleAvatar(
-              backgroundImage:
-                  NetworkImage('assets/foton2.png'), // Substitua pela imagem correta
+              backgroundImage: NetworkImage('assets/foton2.png'), // Substitua pela imagem correta
             ),
             SizedBox(width: 10),
             Column(
@@ -78,22 +115,22 @@ class _ChatItemState extends State<ChatItem> {
           // Exibe as mensagens
           Expanded(
             child: Container(
-              color: Colors.white, // Cor de fundo branca para o chat
+              color: Colors.white,
               child: ListView.builder(
                 itemCount: _messages.length,
                 itemBuilder: (context, index) {
                   return ListTile(
                     title: Align(
-                      alignment: Alignment.centerRight,
+                      alignment: index % 2 == 0 ? Alignment.centerRight : Alignment.centerLeft,
                       child: Container(
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
-                          color: Color(0xFF0F4C7E),
+                          color: index % 2 == 0 ? Color(0xFF0F4C7E) : Colors.grey[300],
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Text(
                           _messages[index],
-                          style: TextStyle(color: Colors.white),
+                          style: TextStyle(color: index % 2 == 0 ? Colors.white : Colors.black),
                         ),
                       ),
                     ),
@@ -121,12 +158,12 @@ class _ChatItemState extends State<ChatItem> {
                 ),
                 SizedBox(width: 10),
                 ElevatedButton(
-                  onPressed: _sendMessage, // Chama a função para enviar mensagem
+                  onPressed: _sendMessage,
                   style: ElevatedButton.styleFrom(
                     shape: CircleBorder(),
                     padding: EdgeInsets.all(14),
-                    backgroundColor: Color.fromARGB(255, 15, 76, 126), // Cor de fundo do botão
-                    foregroundColor: Colors.white, // Cor do ícone do botão
+                    backgroundColor: Color.fromARGB(255, 15, 76, 126),
+                    foregroundColor: Colors.white,
                   ),
                   child: Icon(Icons.send),
                 ),

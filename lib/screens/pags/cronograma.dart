@@ -14,7 +14,7 @@ class _CronogramaState extends State<Cronograma> {
 
   // Função para buscar os dados da API
   Future<void> fetchProgressData() async {
-    final url = Uri.parse('https://05386a25-9acd-4b84-8acd-6fcbd630c722-00-t1eg5yb8e50p.janeway.replit.dev/api/progress');
+    final url = Uri.parse('https://c55023c1-63fe-4aa0-aff2-9acc396c9f9c-00-26z23t0h0ej8o.worf.replit.dev/progress');
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {

@@ -1,5 +1,6 @@
 import 'package:edusmart/controllers/authProvider.dart';
 import 'package:edusmart/screens/cadastro.dart';
+import 'package:edusmart/screens/first.dart';
 import 'package:edusmart/screens/home.dart';
 import 'package:edusmart/screens/login.dart';
 import 'package:edusmart/screens/materias/bio.dart';
@@ -40,6 +41,7 @@ class MyApp extends StatelessWidget {
         child: MaterialApp(
           title: 'Flutter Auth',
           theme: ThemeData(
+            fontFamily: "Roboto",
             primarySwatch: Colors.blue,
           ),
           home: Consumer<AuthProvider>(
@@ -48,11 +50,12 @@ class MyApp extends StatelessWidget {
                 // Corrigido aqui
                 return HomeScreen();
               } else {
-                return RegisterScreen();
+                return First();
               }
             },
           ),
           routes: {
+            '/first':(context) => First(),
             '/login': (context) => LoginScreen(),
             '/register': (context) => RegisterScreen(),
             '/home': (context) => HomeScreen(),

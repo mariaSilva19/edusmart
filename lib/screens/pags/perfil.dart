@@ -39,25 +39,24 @@ class ProfilePage extends StatelessWidget {
               child: Text('Cancelar'),
               style: TextButton.styleFrom(
                 foregroundColor: Colors.white,
-                backgroundColor: Colors.grey, // Cor do texto
+                backgroundColor: Colors.grey,
               ),
               onPressed: () {
-                Navigator.of(context).pop(); // Fecha o diálogo
+                Navigator.of(context).pop();
               },
             ),
             TextButton(
               child: Text('Excluir'),
               style: TextButton.styleFrom(
                 foregroundColor: Colors.white,
-                backgroundColor: Color(0xFF0F4C7E), // Cor do texto
+                backgroundColor: Color(0xFF0F4C7E),
               ),
               onPressed: () {
-                // Lógica para excluir a conta pode ser colocada aqui
-                Navigator.of(context).pop(); // Fecha o diálogo
+                Navigator.of(context).pop();
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(builder: (context) => RegisterScreen()),
-                ); // Redireciona para a tela de cadastro
+                );
               },
             ),
           ],
@@ -79,24 +78,24 @@ class ProfilePage extends StatelessWidget {
               child: Text('Cancelar'),
               style: TextButton.styleFrom(
                 foregroundColor: Colors.white,
-                backgroundColor: Colors.grey, // Cor do texto
+                backgroundColor: Colors.grey,
               ),
               onPressed: () {
-                Navigator.of(context).pop(); // Fecha o diálogo
+                Navigator.of(context).pop();
               },
             ),
             TextButton(
               child: Text('Sair'),
               style: TextButton.styleFrom(
                 foregroundColor: Colors.white,
-                backgroundColor: Color(0xFF0F4C7E), // Cor do texto
+                backgroundColor: Color(0xFF0F4C7E),
               ),
               onPressed: () {
-                Navigator.of(context).pop(); // Fecha o diálogo
+                Navigator.of(context).pop();
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(builder: (context) => RegisterScreen()),
-                ); // Redireciona para a tela de cadastro
+                );
               },
             ),
           ],
@@ -117,7 +116,7 @@ class ProfilePage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Color(0xFF0F4C7E),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: Icon(Icons.arrow_back, color: Colors.white), // Cor branca da seta
           onPressed: () {
             Navigator.pushReplacement(
               context,
@@ -163,7 +162,7 @@ class ProfilePage extends StatelessWidget {
           // Info Section - Without border
           Expanded(
             child: Container(
-              color: Colors.white, // Just a background color, no border
+              color: Colors.white,
               padding: EdgeInsets.all(16.0),
               child: Column(
                 children: [
@@ -176,7 +175,6 @@ class ProfilePage extends StatelessWidget {
                     leading: Icon(Icons.settings, color: Color(0xFF0F4C7E)),
                     title: Text('Configurações'),
                     onTap: () {
-                      // Navega para a tela de configurações
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => SettingsPage()),
@@ -205,7 +203,6 @@ class ProfilePage extends StatelessWidget {
           ),
         ],
       ),
-      // Bottom Navigation Bar
       bottomNavigationBar: BottomNavigationBar(
         onTap: (index) {
           changePage(context, index);
@@ -229,7 +226,7 @@ class ProfilePage extends StatelessWidget {
           ),
         ],
         selectedItemColor: Colors.grey,
-        unselectedItemColor: const Color.fromARGB(255, 174, 161, 161),
+        unselectedItemColor: Color.fromARGB(255, 174, 161, 161),
       ),
     );
   }
