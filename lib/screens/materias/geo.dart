@@ -12,6 +12,7 @@ class GeoPage extends StatefulWidget {
 
 class _GeoPageState extends State<GeoPage> {
   List<dynamic> videoData = [];
+  bool isLoading = true;  // Variável para controlar o estado de carregamento
 
   @override
   void initState() {
@@ -21,7 +22,7 @@ class _GeoPageState extends State<GeoPage> {
 
   Future<void> fetchData() async {
     final response = await http.get(
-      Uri.parse('https://b7089caa-e476-42ba-82fb-5e43b96e9b62-00-1jkv1557vl3bj.worf.replit.dev/api/products/find'),
+      Uri.parse('https://a4cbe45d-4755-42a7-bb7c-8a519c38281c-00-2vitw121bd8i8.picard.replit.dev/api/products/find'),
     );
 
     if (response.statusCode == 200) {
@@ -29,14 +30,14 @@ class _GeoPageState extends State<GeoPage> {
       setState(() {
         // Filtra apenas os vídeos com a categoria "Geografia"
         videoData = data.where((produto) => produto["categoria"] == "Geografia").toList();
+        isLoading = false; // Dados carregados, desativa o carregamento
       });
     } else {
       throw Exception('Erro ao carregar dados da API');
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
+Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -49,7 +50,12 @@ class _GeoPageState extends State<GeoPage> {
         ),
       ),
       drawer: _buildDrawer(),
-      body: SingleChildScrollView(
+      body: isLoading
+          ? Center(
+              child: Image.asset('assets/gif.gif',
+               width: 400, height: 400), // Exibe o GIF enquanto carrega
+            )
+          : SingleChildScrollView(
         child: Stack(
           children: [
             Column(
@@ -105,7 +111,8 @@ class _GeoPageState extends State<GeoPage> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      _buildVideoList(),
+                      // Exibe o GIF de carregamento enquanto está carregando
+                      isLoading ? _buildLoading() : _buildVideoList(),
                     ],
                   ),
                 ),
@@ -168,7 +175,7 @@ class _GeoPageState extends State<GeoPage> {
 
   Widget _buildVideoList() {
     List<List<dynamic>> videoChunks = _chunkVideos(videoData, 5);
-    
+
     return Column(
       children: videoChunks.map((chunk) {
         return SizedBox(
@@ -225,6 +232,13 @@ class _GeoPageState extends State<GeoPage> {
     } else {
       throw 'Não foi possível abrir o link $url';
     }
+  }
+
+  Widget _buildLoading() {
+    // Exibe o GIF de carregamento
+    return Center(
+      child: Image.asset('assets/loading.gif'), // Substitua pelo seu caminho do GIF
+    );
   }
 
   Widget _buildBottomNavigationBar() {

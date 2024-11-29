@@ -12,6 +12,7 @@ class MatPage extends StatefulWidget {
 
 class _MatPageState extends State<MatPage> {
   List<dynamic> videoData = [];
+  bool isLoading = true; // Variável para controlar o carregamento
 
   @override
   void initState() {
@@ -20,18 +21,25 @@ class _MatPageState extends State<MatPage> {
   }
 
   Future<void> fetchData() async {
-    final response = await http.get(
-      Uri.parse('https://b7089caa-e476-42ba-82fb-5e43b96e9b62-00-1jkv1557vl3bj.worf.replit.dev/api/products/find'),
-    );
+    try {
+      final response = await http.get(
+        Uri.parse('https://a4cbe45d-4755-42a7-bb7c-8a519c38281c-00-2vitw121bd8i8.picard.replit.dev/api/products/find'),
+      );
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body)["produtos"];
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body)["produtos"];
+        setState(() {
+          videoData = data.where((produto) => produto["categoria"] == "Matemática").toList();
+          isLoading = false; // Carregamento concluído
+        });
+      } else {
+        throw Exception('Erro ao carregar dados da API');
+      }
+    } catch (e) {
+      // Trate o erro adequadamente, se necessário
       setState(() {
-        // Filtra apenas os vídeos com a categoria "Matemática"
-        videoData = data.where((produto) => produto["categoria"] == "Matemática").toList();
+        isLoading = false; // Mesmo que dê erro, esconda o indicador
       });
-    } else {
-      throw Exception('Erro ao carregar dados da API');
     }
   }
 
@@ -49,80 +57,80 @@ class _MatPageState extends State<MatPage> {
         ),
       ),
       drawer: _buildDrawer(),
-      body: SingleChildScrollView(
-        child: Stack(
-          children: [
-            Column(
-              children: [
-                Container(
-                  color: const Color.fromARGB(255, 15, 76, 126),
-                  width: double.infinity,
-                  height: 200,
-                ),
-                Center(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 8.0,
-                      horizontal: 16.0,
-                    ),
-                  ),
-                ),
-                Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                  ),
-                  margin: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+      body: isLoading
+          ? Center(
+              child: Image.asset(
+                'assets/gif.gif', // Caminho do GIF no seu projeto
+                width: 400,
+                height: 400,
+              ),
+            )
+          : SingleChildScrollView(
+              child: Stack(
+                children: [
+                  Column(
                     children: [
-                      const SizedBox(height: 16),
-                      Center(
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 8.0,
-                            horizontal: 16.0,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.orange,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: const Text(
-                            'Matemática',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 36,
-                              fontWeight: FontWeight.bold,
+                      Container(
+                        color: const Color.fromARGB(255, 15, 76, 126),
+                        width: double.infinity,
+                        height: 200,
+                      ),
+                      Container(
+                        width: double.infinity,
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                        ),
+                        margin: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 16),
+                            Center(
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 8.0,
+                                  horizontal: 16.0,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.orange,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: const Text(
+                                  'Matemática',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 36,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
                             ),
-                          ),
+                            const SizedBox(height: 16),
+                            const Text(
+                              'Vídeos',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            _buildVideoList(),
+                          ],
                         ),
                       ),
-                      const SizedBox(height: 16),
-                      const Text(
-                        'Vídeos',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      _buildVideoList(),
                     ],
                   ),
-                ),
-              ],
-            ),
-            Positioned(
-              top: -20,
-              right: -50,
-              child: Image.asset(
-                'assets/foton2.png',
-                width: 350,
-                height: 350,
+                  Positioned(
+                    top: -20,
+                    right: -50,
+                    child: Image.asset(
+                      'assets/foton2.png',
+                      width: 350,
+                      height: 350,
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
-      ),
       bottomNavigationBar: _buildBottomNavigationBar(),
     );
   }
@@ -168,7 +176,7 @@ class _MatPageState extends State<MatPage> {
 
   Widget _buildVideoList() {
     List<List<dynamic>> videoChunks = _chunkVideos(videoData, 5);
-    
+
     return Column(
       children: videoChunks.map((chunk) {
         return SizedBox(
@@ -211,7 +219,6 @@ class _MatPageState extends State<MatPage> {
     );
   }
 
-  // Função para dividir os vídeos em blocos de 5
   List<List<dynamic>> _chunkVideos(List<dynamic> list, int chunkSize) {
     List<List<dynamic>> chunks = [];
     for (int i = 0; i < list.length; i += chunkSize) {

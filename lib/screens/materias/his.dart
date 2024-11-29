@@ -12,6 +12,7 @@ class HisPage extends StatefulWidget {
 
 class _HisPageState extends State<HisPage> {
   List<dynamic> videoData = [];
+  bool isLoading = true; // Variável para controlar o carregamento
 
   @override
   void initState() {
@@ -21,7 +22,7 @@ class _HisPageState extends State<HisPage> {
 
   Future<void> fetchData() async {
     final response = await http.get(
-      Uri.parse('https://b7089caa-e476-42ba-82fb-5e43b96e9b62-00-1jkv1557vl3bj.worf.replit.dev/api/products/find'),
+      Uri.parse('https://a4cbe45d-4755-42a7-bb7c-8a519c38281c-00-2vitw121bd8i8.picard.replit.dev/api/products/find'),
     );
 
     if (response.statusCode == 200) {
@@ -29,6 +30,7 @@ class _HisPageState extends State<HisPage> {
       setState(() {
         // Filtra apenas os vídeos com a categoria "História"
         videoData = data.where((produto) => produto["categoria"] == "História").toList();
+        isLoading = false; // Define isLoading como false quando os dados são carregados
       });
     } else {
       throw Exception('Erro ao carregar dados da API');
@@ -98,7 +100,15 @@ class _HisPageState extends State<HisPage> {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      _buildVideoList(),
+                      isLoading
+                          ? Center(
+                              child: Image.asset(
+                                'assets/gif.gif', // Caminho para o seu GIF
+                                width: 400,
+                                height: 400,
+                              ),
+                            )
+                          : _buildVideoList(),
                     ],
                   ),
                 ),

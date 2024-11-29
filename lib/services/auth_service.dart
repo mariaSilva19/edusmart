@@ -4,7 +4,8 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
-  final String baseUrl = 'https://c55023c1-63fe-4aa0-aff2-9acc396c9f9c-00-26z23t0h0ej8o.worf.replit.dev/api';
+  final String baseUrl =
+      'https://a4cbe45d-4755-42a7-bb7c-8a519c38281c-00-2vitw121bd8i8.picard.replit.dev/api';
 
   static String emailLogado = '';
   static String usuarioLogado = '';
@@ -32,14 +33,26 @@ class AuthService {
     print(password);
     print(response.statusCode);
     print(response.body);
+
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
-      final prefs = await SharedPreferences.getInstance();
-      prefs.setString('nome', responseData['usuario'].toString());
-      prefs.setString('email', email);
-      prefs.setString('avatar', responseData['avatar']?.toString() ?? '');
-      usuarioLogado = responseData['usuario'];
-      return responseData['token'];
+
+      print('teste: ${responseData}');
+
+      final usuario = responseData['usuario'];
+      if (usuario is Map) {
+        final prefs = await SharedPreferences.getInstance();
+        prefs.setString('nome', usuario['nome'] ?? '');
+        prefs.setString('email', usuario['email'] ?? '');
+        prefs.setString('avatar', responseData['avatar']?.toString() ?? '');
+        usuarioLogado = usuario['nome'] ?? '';
+
+        print('babaowe: ');
+        return responseData['token'];
+      } else {
+        print('atata');
+        throw Exception('Formato inválido da resposta da API');
+      }
     } else {
       throw Exception('Failed to login: ${response.body}');
     }
@@ -48,6 +61,7 @@ class AuthService {
   static String getEmailLogado() {
     return emailLogado;
   }
+
   static String getNomeLogado() {
     return usuarioLogado;
   }

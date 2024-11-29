@@ -138,7 +138,7 @@ class Materia extends StatelessWidget {
                           subjectButton('História', Colors.brown, Icons.account_balance, '/his', context),
                           subjectButton('Geografia', Colors.blue, Icons.public, '/geo', context),
                           subjectButton('Física', Colors.pink, Icons.flash_on, '/fis', context),
-                          subjectButton('Química', Colors.green, Icons.science, '/qui', context),
+                          subjectButton('Química', Colors.green, Icons.science, '/quim', context),
                           subjectButton('Sociologia', Colors.yellow, Icons.people, '/soc', context),
                           subjectButton('Filosofia', Colors.red, Icons.psychology, '/filo', context),
                           subjectButton('Inglês', Colors.purple, Icons.spellcheck_outlined, '/ing', context),

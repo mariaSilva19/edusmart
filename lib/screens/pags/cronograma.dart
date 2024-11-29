@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'dart:convert';  // Para decodificar o JSON
+import 'dart:convert'; // Para decodificar o JSON
 import 'package:http/http.dart' as http;
 
 class Cronograma extends StatefulWidget {
@@ -12,20 +12,21 @@ class Cronograma extends StatefulWidget {
 class _CronogramaState extends State<Cronograma> {
   List<ProgressCard> progressCards = [];
 
-  // Função para buscar os dados da API
   Future<void> fetchProgressData() async {
-    final url = Uri.parse('https://c55023c1-63fe-4aa0-aff2-9acc396c9f9c-00-26z23t0h0ej8o.worf.replit.dev/progress');
+    final url = Uri.parse(
+        'https://a4cbe45d-4755-42a7-bb7c-8a519c38281c-00-2vitw121bd8i8.picard.replit.dev/progress');
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         setState(() {
           // Iterar sobre os dados retornados e criar os ProgressCards
-          progressCards = (data['progressos'] as List).map((progressItem) {
+          progressCards = (data['progressos'] as List)
+              .take(3) // Pegando somente os três primeiros progressos
+              .map((progressItem) {
             return ProgressCard(
-              subject: 'Nome do Assunto', // Ajuste conforme necessário
-              chapter: 'Nome do Capítulo', // Ajuste conforme necessário
-              progress: (progressItem['progress'] / 100), // Progresso em decimal
+              subject: progressItem['subject'] ?? 'Assunto',
+              progress: (progressItem['progress'] ?? 0) / 100,
             );
           }).toList();
         });
@@ -42,6 +43,7 @@ class _CronogramaState extends State<Cronograma> {
     super.initState();
     fetchProgressData(); // Chama a função quando a tela for inicializada
   }
+
   void changePage(BuildContext context, int index) {
     switch (index) {
       case 0:
@@ -49,13 +51,11 @@ class _CronogramaState extends State<Cronograma> {
         break;
       case 1:
         Navigator.popAndPushNamed(context, '/cronograma');
-        // Navegar para outra página
         break;
       case 2:
         Navigator.popAndPushNamed(context, '/chat');
         break;
       case 3:
-        // Navegar para outra página
         break;
     }
   }
@@ -64,17 +64,17 @@ class _CronogramaState extends State<Cronograma> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0F4C7E), // Cor azul da AppBar
-         iconTheme: const IconThemeData(
-         color: Colors.white, // Define a cor do ícone do Drawer como branco
-         ),
-        title: const Text('EduSmart', 
+        backgroundColor: const Color(0xFF0F4C7E),
+        iconTheme: const IconThemeData(
+          color: Colors.white,
+        ),
+        title: const Text('EduSmart',
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
         centerTitle: true,
         leading: Builder(
           builder: (BuildContext context) {
             return IconButton(
-              icon: const Icon(Icons.menu), // Ícone de menu
+              icon: const Icon(Icons.menu),
               onPressed: () {
                 Scaffold.of(context).openDrawer();
               },
@@ -82,7 +82,7 @@ class _CronogramaState extends State<Cronograma> {
           },
         ),
       ),
-            drawer: Drawer(
+      drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
@@ -102,7 +102,6 @@ class _CronogramaState extends State<Cronograma> {
               leading: const Icon(Icons.home),
               title: const Text('Início'),
               onTap: () {
-                // Ação ao clicar em Início
                 Navigator.popAndPushNamed(context, '/home');
               },
             ),
@@ -110,16 +109,13 @@ class _CronogramaState extends State<Cronograma> {
               leading: const Icon(Icons.book_online),
               title: const Text('Planos de Estudos'),
               onTap: () {
-                // Ação ao clicar em Planos de Estudos
                 Navigator.popAndPushNamed(context, '/cronograma');
               },
             ),
-            
             ListTile(
               leading: const Icon(Icons.assignment_turned_in),
               title: const Text('Gabaritos'),
               onTap: () {
-                // Ação ao clicar em Gabaritos
                 Navigator.popAndPushNamed(context, '/exercicios');
               },
             ),
@@ -127,116 +123,105 @@ class _CronogramaState extends State<Cronograma> {
               leading: const Icon(Icons.video_library),
               title: const Text('Aulas'),
               onTap: () {
-                // Ação ao clicar em Aulas
                 Navigator.popAndPushNamed(context, '/materias');
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.account_circle),
-              title: const Text('Área do Aluno'),
-              onTap: () {
-                // Ação ao clicar em Área do Aluno
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.edit),
-              title: const Text('Redação'),
-              onTap: () {
-                // Ação ao clicar em Redação
               },
             ),
           ],
         ),
       ),
       body: SingleChildScrollView(
-      child: Stack(
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Container azul contínuo no topo
-              Container(
-                height: 180, // Altura do container azul
-                color: const Color(0xFF0F4C7E), // Cor azul
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(30),
+        child: Stack(
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  height: 180,
+                  color: const Color(0xFF0F4C7E),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 20),
-                    // Título Assuntos
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16.0),
-                      child: Text(
-                        'Assuntos',
-                        style: TextStyle(
-                            fontSize: 22, fontWeight: FontWeight.bold),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 20),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Text(
+                          'Assuntos',
+                          style: TextStyle(
+                              fontSize: 22, fontWeight: FontWeight.bold),
+                        ),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16.0, vertical: 10.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          SubjectCard('Matemática', Colors.orange),
-                          SubjectCard('Geografia', Colors.blue),
-                        ],
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10.0),
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: [
+                              const SizedBox(width: 16), // Espaço antes do primeiro card
+                              SubjectCard('Matemática', Colors.orange),
+                              const SizedBox(width: 10),
+                              SubjectCard('Geografia', Colors.blue),
+                              const SizedBox(width: 10),
+                              SubjectCard('Biologia', Colors.green),
+                              const SizedBox(width: 10),
+                              SubjectCard('História', Colors.purple),
+                              const SizedBox(width: 10),
+                              SubjectCard('Física', Colors.red),
+                              const SizedBox(width: 10),
+                              SubjectCard('Química', Colors.cyan),
+                              const SizedBox(width: 16), // Espaço depois do último card
+                            ],
+                          ),
+                        ),
                       ),
-                    ),
-
-                    // Título Sua Programação
-                    const Padding(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 16.0, vertical: 10.0),
-                      child: Text(
-                        'Sua Programação',
-                        style: TextStyle(
-                            fontSize: 22, fontWeight: FontWeight.bold),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 16.0, vertical: 10.0),
+                        child: Text(
+                          'Sua Programação',
+                          style: TextStyle(
+                              fontSize: 22, fontWeight: FontWeight.bold),
+                        ),
                       ),
-                    ),
-
-                    // Exibindo dados de progresso
-                    ...progressCards.isNotEmpty
-                        ? progressCards
-                        : [
-                            ProgressCard(
-                              subject: 'Biologia',
-                              chapter: 'Capítulo 3: Reino Animal',
-                              progress: 0.7,
-                            ),
-                            ProgressCard(
-                              subject: 'História',
-                              chapter: 'Capítulo 5: Brasil Colônia',
-                              progress: 0.3,
-                            ),
-                          ],
-                  ],
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Column(
+                          children: progressCards.isNotEmpty
+                              ? progressCards
+                              : [
+                                  ProgressCard(
+                                      subject: 'Biologia', progress: 0.7),
+                                  ProgressCard(
+                                      subject: 'História', progress: 0.3),
+                                  ProgressCard(subject: 'Física', progress: 0.5),
+                                ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          ),
-
-          // Adicionando a imagem foton2 que se sobrepõe entre o container azul e o branco
-          Positioned(
-            top: -10, // Ajuste a posição vertical
-            left: MediaQuery.of(context).size.width * 0.5 - 50, // Centralizar horizontalmente
-            child: Image.asset(
-              'assets/foton2.png',
-              width: 300, // Ajuste o tamanho da imagem
-              height: 300,
+              ],
             ),
-          ),
-        ],
+            Positioned(
+              top: -10,
+              left: MediaQuery.of(context).size.width * 0.5 - 50,
+              child: Image.asset(
+                'assets/foton2.png',
+                width: 300,
+                height: 300,
+              ),
+            ),
+          ],
+        ),
       ),
-    ),
       bottomNavigationBar: BottomNavigationBar(
         onTap: (index) {
-          changePage(context, index); // Chama a função de navegação
+          changePage(context, index);
         },
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -274,8 +259,8 @@ class SubjectCard extends StatelessWidget {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Container(
-        width: 150,
-        height: 100,
+        width: 100,
+        height: 80,
         decoration: BoxDecoration(
           color: color,
           borderRadius: BorderRadius.circular(16),
@@ -283,7 +268,8 @@ class SubjectCard extends StatelessWidget {
         child: Center(
           child: Text(
             subject,
-            style: const TextStyle(color: Colors.white, fontSize: 18),
+            style: const TextStyle(color: Colors.white, fontSize: 14),
+            textAlign: TextAlign.center,
           ),
         ),
       ),
@@ -293,29 +279,47 @@ class SubjectCard extends StatelessWidget {
 
 class ProgressCard extends StatelessWidget {
   final String subject;
-  final String chapter;
   final double progress;
 
-  ProgressCard({required this.subject, required this.chapter, required this.progress});
+  ProgressCard({required this.subject, required this.progress});
 
   @override
   Widget build(BuildContext context) {
+    Color lineColor = progress < 0.5
+        ? Colors.red
+        : progress > 0.6
+            ? Colors.green
+            : Colors.green;
+
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+      margin: const EdgeInsets.symmetric(vertical: 10),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
           children: [
-            Text(subject, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            Text(chapter, style: const TextStyle(fontSize: 14, color: Colors.grey)),
-            const SizedBox(height: 10),
-            LinearProgressIndicator(
-              value: progress,
-              backgroundColor: Colors.grey[200],
-              color: progress > 0.5 ? Colors.green : Colors.red,
-              minHeight: 8,
+            Expanded(
+              flex: 2,
+              child: Text(
+                subject,
+                style: const TextStyle(fontSize: 18),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              flex: 5,
+              child: Container(
+                height: 6,
+                color: lineColor,
+                width: MediaQuery.of(context).size.width * progress,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Text(
+              '${(progress * 100).toStringAsFixed(0)}%',
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
           ],
         ),

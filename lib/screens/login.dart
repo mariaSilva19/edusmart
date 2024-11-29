@@ -77,6 +77,8 @@ class LoginScreen extends StatelessWidget{
                     } catch (error) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text('Falha no Login: $error')),
+                        
+                        
                       );
                     }
                   },

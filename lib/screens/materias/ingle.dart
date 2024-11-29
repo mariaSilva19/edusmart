@@ -12,6 +12,7 @@ class IngPage extends StatefulWidget {
 
 class _IngPageState extends State<IngPage> {
   List<dynamic> videoData = [];
+  bool isLoading = true;  // Variável para controlar o estado de carregamento
 
   @override
   void initState() {
@@ -21,7 +22,7 @@ class _IngPageState extends State<IngPage> {
 
   Future<void> fetchData() async {
     final response = await http.get(
-      Uri.parse('https://b7089caa-e476-42ba-82fb-5e43b96e9b62-00-1jkv1557vl3bj.worf.replit.dev/api/products/find'),
+      Uri.parse('https://a4cbe45d-4755-42a7-bb7c-8a519c38281c-00-2vitw121bd8i8.picard.replit.dev/api/products/find'),
     );
 
     if (response.statusCode == 200) {
@@ -29,6 +30,7 @@ class _IngPageState extends State<IngPage> {
       setState(() {
         // Filtra apenas os vídeos com a categoria "Inglês"
         videoData = data.where((produto) => produto["categoria"] == "Inglês").toList();
+        isLoading = false;  // Define como false quando os dados forem carregados
       });
     } else {
       throw Exception('Erro ao carregar dados da API');
@@ -53,7 +55,7 @@ class _IngPageState extends State<IngPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
+   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -66,7 +68,12 @@ class _IngPageState extends State<IngPage> {
         ),
       ),
       drawer: _buildDrawer(),
-      body: SingleChildScrollView(
+      body: isLoading
+          ? Center(
+              child: Image.asset('assets/gif.gif',
+               width: 400, height: 400) // Substitua pelo seu GIF
+            )
+          : SingleChildScrollView(
         child: Stack(
           children: [
             Column(
@@ -122,7 +129,9 @@ class _IngPageState extends State<IngPage> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      _buildVideoList(),
+                      isLoading 
+                          ? _buildLoading()  // Exibe o GIF de carregamento
+                          : _buildVideoList(),
                     ],
                   ),
                 ),
@@ -242,6 +251,12 @@ class _IngPageState extends State<IngPage> {
     } else {
       throw 'Não foi possível abrir o link $url';
     }
+  }
+
+  Widget _buildLoading() {
+    return Center(
+      child: Image.asset('assets/loading.gif'),  // GIF de carregamento
+    );
   }
 
   Widget _buildBottomNavigationBar() {

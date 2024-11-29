@@ -13,6 +13,7 @@ class FisPage extends StatefulWidget {
 class _FisPageState extends State<FisPage> {
   int _currentRating = 0;
   List<dynamic> videoData = [];
+  bool isLoading = true; // Controle de carregamento
 
   @override
   void initState() {
@@ -22,13 +23,14 @@ class _FisPageState extends State<FisPage> {
 
   Future<void> fetchData() async {
     final response = await http.get(
-      Uri.parse('https://b7089caa-e476-42ba-82fb-5e43b96e9b62-00-1jkv1557vl3bj.worf.replit.dev/api/products/find'),
+      Uri.parse('https://a4cbe45d-4755-42a7-bb7c-8a519c38281c-00-2vitw121bd8i8.picard.replit.dev/api/products/find'),
     );
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body)["produtos"];
       setState(() {
         videoData = data.where((produto) => produto["categoria"] == "Física").toList();
+        isLoading = false; // Dados carregados, pare o carregamento
       });
     } else {
       throw Exception('Erro ao carregar dados da API');
@@ -64,75 +66,80 @@ class _FisPageState extends State<FisPage> {
         ),
         backgroundColor: const Color.fromARGB(255, 15, 76, 126),
         iconTheme: const IconThemeData(
-          color: Colors.white, 
+          color: Colors.white,
         ),
       ),
       drawer: _buildDrawer(),
-      body: SingleChildScrollView(
-        child: Stack(
-          children: [
-            Column(
-              children: [
-                Container(
-                  color: const Color.fromARGB(255, 15, 76, 126),
-                  width: double.infinity,
-                  height: 200,
-                ),
-                Center(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                  ),
-                ),
-                Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                  ),
-                  margin: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+      body: isLoading
+          ? Center(
+              child: Image.asset('assets/gif.gif',
+               width: 400, height: 400), // Exibe o GIF enquanto carrega
+            )
+          : SingleChildScrollView(
+              child: Stack(
+                children: [
+                  Column(
                     children: [
-                      const SizedBox(height: 16),
+                      Container(
+                        color: const Color.fromARGB(255, 15, 76, 126),
+                        width: double.infinity,
+                        height: 200,
+                      ),
                       Center(
                         child: Container(
                           padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                          decoration: BoxDecoration(
-                            color: Colors.pink,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: const Text(
-                            'Física',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 36,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
                         ),
                       ),
-                      const SizedBox(height: 16),
-                      const Text(
-                        'Vídeos',
-                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      Container(
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                        ),
+                        margin: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 16),
+                            Center(
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                                decoration: BoxDecoration(
+                                  color: Colors.pink,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: const Text(
+                                  'Física',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 36,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            const Text(
+                              'Vídeos',
+                              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                            ),
+                            _buildVideoList(videoChunks),
+                          ],
+                        ),
                       ),
-                      _buildVideoList(videoChunks),
                     ],
                   ),
-                ),
-              ],
-            ),
-            Positioned(
-              top: -20,
-              right: -50,
-              child: Image.asset(
-                'assets/foton2.png',
-                width: 350,
-                height: 350,
+                  Positioned(
+                    top: -20,
+                    right: -50,
+                    child: Image.asset(
+                      'assets/foton2.png',
+                      width: 350,
+                      height: 350,
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
-      ),
       bottomNavigationBar: _buildBottomNavigationBar(),
     );
   }

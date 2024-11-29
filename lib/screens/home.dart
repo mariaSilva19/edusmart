@@ -69,8 +69,8 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             Image.asset(
               'assets/foton.png',
-              height: 40, // Tamanho ajustado da imagem
-              width: 40,
+              height: 75, // Tamanho ajustado da imagem
+              width: 75,
             ),
           ],
         ),

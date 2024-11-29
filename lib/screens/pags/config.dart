@@ -62,7 +62,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 controller: _nameController,
                 decoration: InputDecoration(
                   labelText: 'Nome e sobrenome',
-                  hintText: 'Ester Ramalho',
+                  hintText: 'maria Silva',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -81,7 +81,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 controller: _emailController,
                 decoration: InputDecoration(
                   labelText: 'E-mail',
-                  hintText: 'esterramalho@gmail.com',
+                  hintText: 'maria@gmail.com',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -153,7 +153,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color.fromARGB(255, 15, 76, 126), // Azul
+                    backgroundColor: Color.fromARGB(255, 227, 229, 230), // Azul
                     textStyle: TextStyle(color: Colors.white),
                     padding: EdgeInsets.symmetric(horizontal: 70, vertical: 20),
                     shape: RoundedRectangleBorder(

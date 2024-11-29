@@ -12,6 +12,7 @@ class PortPage extends StatefulWidget {
 
 class _PortPageState extends State<PortPage> {
   List<dynamic> videoData = [];
+  bool isLoading = true; // Variável para controlar o estado de carregamento
 
   @override
   void initState() {
@@ -21,7 +22,7 @@ class _PortPageState extends State<PortPage> {
 
   Future<void> fetchData() async {
     final response = await http.get(
-      Uri.parse('https://b7089caa-e476-42ba-82fb-5e43b96e9b62-00-1jkv1557vl3bj.worf.replit.dev/api/products/find'),
+      Uri.parse('https://a4cbe45d-4755-42a7-bb7c-8a519c38281c-00-2vitw121bd8i8.picard.replit.dev/api/products/find'),
     );
 
     if (response.statusCode == 200) {
@@ -29,6 +30,7 @@ class _PortPageState extends State<PortPage> {
       setState(() {
         // Filtra apenas os vídeos com a categoria "Português"
         videoData = data.where((produto) => produto["categoria"] == "Português").toList();
+        isLoading = false; // Dados carregados, altera o estado
       });
     } else {
       throw Exception('Erro ao carregar dados da API');
@@ -49,80 +51,85 @@ class _PortPageState extends State<PortPage> {
         ),
       ),
       drawer: _buildDrawer(),
-      body: SingleChildScrollView(
-        child: Stack(
-          children: [
-            Column(
-              children: [
-                Stack(
-                  children: [
-                    Container(
-                      color: const Color.fromARGB(255, 15, 76, 126),
-                      width: double.infinity,
-                      height: 200,
-                    ),
-                  ],
-                ),
-                Center(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 8.0,
-                      horizontal: 16.0,
-                    ),
-                  ),
-                ),
-                // Container branco sobre o conteúdo azul
-                Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Colors.white, // Cor do container branco
-                  ),
-                  margin: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+      body: isLoading
+          ? Center(
+              child: Image.asset('assets/gif.gif',
+               width: 400, height: 400),
+            )
+          : SingleChildScrollView(
+              child: Stack(
+                children: [
+                  Column(
                     children: [
-                      const SizedBox(height: 16), // Espaçamento entre o retângulo e o próximo item
-
-                      // Container laranja centralizado dentro do container branco
+                      Stack(
+                        children: [
+                          Container(
+                            color: const Color.fromARGB(255, 15, 76, 126),
+                            width: double.infinity,
+                            height: 200,
+                          ),
+                        ],
+                      ),
                       Center(
                         child: Container(
                           padding: const EdgeInsets.symmetric(
                             vertical: 8.0,
                             horizontal: 16.0,
                           ),
-                          decoration: BoxDecoration(
-                            color: Colors.purple, // Retângulo roxo
-                            borderRadius: BorderRadius.circular(12), // Arredondamento do retângulo roxo
-                          ),
-                          child: const Text(
-                            'Português',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 36,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
                         ),
                       ),
-                      const SizedBox(height: 16),
-                      _buildVideoList(), // Lista de vídeos para Português
+                      // Container branco sobre o conteúdo azul
+                      Container(
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: Colors.white, // Cor do container branco
+                        ),
+                        margin: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 16), // Espaçamento entre o retângulo e o próximo item
+
+                            // Container laranja centralizado dentro do container branco
+                            Center(
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 8.0,
+                                  horizontal: 16.0,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.purple, // Retângulo roxo
+                                  borderRadius: BorderRadius.circular(12), // Arredondamento do retângulo roxo
+                                ),
+                                child: const Text(
+                                  'Português',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 36,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            _buildVideoList(), // Lista de vídeos para Português
+                          ],
+                        ),
+                      ),
                     ],
                   ),
-                ),
-              ],
-            ),
-            Positioned(
-              top: -20,
-              right: -50,
-              child: Image.asset(
-                'assets/foton2.png',
-                width: 350,
-                height: 350,
+                  Positioned(
+                    top: -20,
+                    right: -50,
+                    child: Image.asset(
+                      'assets/foton2.png',
+                      width: 350,
+                      height: 350,
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
-      ),
       bottomNavigationBar: _buildBottomNavigationBar(),
     );
   }

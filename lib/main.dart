@@ -39,6 +39,7 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider(create: (_) => AuthProvider())
         ],
         child: MaterialApp(
+          debugShowCheckedModeBanner: false,
           title: 'Flutter Auth',
           theme: ThemeData(
             fontFamily: "Roboto",
@@ -73,6 +74,7 @@ class MyApp extends StatelessWidget {
             '/filo': (context) => FiloPage(),
             '/ing': (context) => IngPage(),
             '/port': (context) => PortPage(),
+            '/his': (context) => HisPage(),
           },
         ));
   }
